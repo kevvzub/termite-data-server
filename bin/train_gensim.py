@@ -10,7 +10,7 @@ def TrainGensim( corpus_path, model_path, token_regex, num_topics, num_passes, i
 	logger = logging.getLogger( 'termite' )
 	logger.addHandler( logging.StreamHandler() )
 	logger.setLevel( logging.INFO if is_quiet else logging.DEBUG )
-	gensimLogger = logging.getLogger('gensim.models.ldamodel')
+	gensimLogger = logging.getLogger('gensim.models.wrappers.ldavowpalwabbit')
 	gensimLogger.addHandler( logging.StreamHandler() )
 	gensimLogger.setLevel( logging.WARNING if is_quiet else logging.INFO )
 	
@@ -26,6 +26,9 @@ def TrainGensim( corpus_path, model_path, token_regex, num_topics, num_passes, i
 	
 	if force_overwrite or not os.path.exists( model_path ):
 		BuildLDA( corpus_filename, modelPath = model_path, tokenRegex = token_regex, numTopics = num_topics, numPasses = num_passes )
+
+		print('DEBUG: Calling BuildLDA')
+
 	else:
 		logger.info( '    Already exists: %s', model_path )
 
@@ -34,11 +37,14 @@ def main():
 	parser.add_argument( 'corpus_path'  , type = str                         , help = 'Input folder containing the text corpus as "corpus.txt"' )
 	parser.add_argument( 'model_path'   , type = str                         , help = 'Output model folder' )
 	parser.add_argument( '--token-regex', type = str   , default = r'\w{3,}' , help = 'Tokenization', dest = 'token_regex' )
-	parser.add_argument( '--topics'     , type = int   , default = 20        , help = 'Number of topics' )
-	parser.add_argument( '--passes'     , type = int   , default = 1         , help = 'Training passes' )
+	parser.add_argument( '--topics'     , type = int   , default = 8        , help = 'Number of topics' )
+	parser.add_argument( '--passes'     , type = int   , default = 100         , help = 'Training passes' )
 	parser.add_argument( '--quiet'      , const = True , default = False     , help = 'Show fewer debugging messages', action = 'store_const' )
-	parser.add_argument( '--overwrite'  , const = True , default = False     , help = 'Overwrite any existing model', action = 'store_const' )
+	parser.add_argument( '--overwrite'  , const = True , default = True     , help = 'Overwrite any existing model', action = 'store_const' )
 	args = parser.parse_args()
+
+	print('DEBUG: Calling TrainGensim')
+
 	TrainGensim( args.corpus_path, args.model_path, args.token_regex, args.topics, args.passes, args.quiet, args.overwrite )
 
 if __name__ == '__main__':

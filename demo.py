@@ -4,10 +4,10 @@
 import argparse
 import subprocess
 
-DEFAULT_DATASET = 'infovis'
+DEFAULT_DATASET = 'nsf1k'
 DATASETS = [ DEFAULT_DATASET, '20newsgroups', 'nsfgrants', 'nsf25k', 'nsf10k', 'nsf1k', 'poliblogs', 'gjp', 'fomc', 'CR_financial_collapse', 'CR_stock_market_plunge', 'FCIC_final_report', 'FCIC_first_hearing', 'FR_federal_open_market_committee', 'FR_monetary_policy_hearings' ]
 
-DEFAULT_MODEL = 'mallet'
+DEFAULT_MODEL = 'gensim'
 MODELS = [ DEFAULT_MODEL, 'treetm', 'stmt', 'stm', 'gensim' ]
 
 def Shell(command):
@@ -26,12 +26,12 @@ def Demonstrate(dataset, model, is_quiet, force_overwrite):
 	def PrepareDataset():
 		executable = 'bin/fetch_dataset.sh'
 		Shell([executable, dataset])
-	
+
 	def PrepareModel():
 		executable = 'bin/setup_{}.sh'.format(model)
 		command = [executable]
 		Shell(command)
-	
+
 	def PrepareOthers():
 		executable = 'bin/setup_mallet.sh'
 		command = [executable]
@@ -40,7 +40,7 @@ def Demonstrate(dataset, model, is_quiet, force_overwrite):
 		executable = 'bin/setup_corenlp.sh'
 		command = [executable]
 		Shell(command)
-	
+
 	def TrainModel():
 		executable = 'bin/train_{}.py'.format(model)
 		command = [executable, corpus_folder, model_folder]
@@ -66,13 +66,13 @@ def Demonstrate(dataset, model, is_quiet, force_overwrite):
 	print '     model = {}'.format(model_folder)
 	print '       app = {}'.format(app_name)
 	print '--------------------------------------------------------------------------------'
-	
+
 	PrepareDataset()
 	PrepareModel()
 	PrepareOthers()
 	TrainModel()
 	ImportModel()
-	
+
 def main():
 	parser = argparse.ArgumentParser( description = 'Import a MALLET topic model as a web2py application.' )
 	parser.add_argument( 'dataset'     , nargs = '?', type = str, default = DEFAULT_DATASET, choices = DATASETS, help = 'Dataset identifier' )

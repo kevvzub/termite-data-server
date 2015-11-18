@@ -77,8 +77,13 @@ class GensimLDA( object ):
 
 		# Generate gensim objects
 		corpus = GensimTermiteCorpusReader( self.corpusPath, tokenRegex )
-		corpus.dictionary.filter_extremes( no_above = 0.2 )  # remove words that are too frequent/too infrequent
-		model = models.LdaModel( corpus, id2word = corpus.dictionary, num_topics = numTopics, passes = numPasses )
+		corpus.dictionary.filter_extremes( no_above = 0.7 )  # remove words that are too frequent/too infrequent
+
+
+		model = models.wrappers.ldavowpalwabbit.LdaVowpalWabbit('/usr/local/bin/vw', corpus, id2word = corpus.dictionary, num_topics = numTopics, passes = numPasses, alpha=.1 )
+
+		print('Here is the model: /n')
+		print(model)
 
 		self.logger.info( 'Saving dictionary to disk: %s', self.dictionaryInGensim )
 		corpus.dictionary.save( self.dictionaryInGensim )

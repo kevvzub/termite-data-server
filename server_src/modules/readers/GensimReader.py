@@ -36,7 +36,7 @@ class GensimReader(LDAReader):
 		self.logger.debug( '    Loading corpus: %s', self.corpusInGensim )
 		self.text_corpus = corpora.TextCorpus.load( self.corpusInGensim ) if self.corpus is not None else None 
 		self.logger.debug( '    Loading model: %s', self.modelInGensim )
-		self.model = models.LdaModel.load( self.modelInGensim )
+		self.model = models.wrappers.ldavowpalwabbit.LdaVowpalWabbit.load( self.modelInGensim )
 		if self.stateInGensim is not None:
 			self.model.state = models.ldamodel.LdaState.load( self.stateInGensim )
 		
@@ -44,7 +44,7 @@ class GensimReader(LDAReader):
 		self.docList = [ d.doc_id for d in self.corpus().select(self.corpus.corpus.doc_id, orderby=self.corpus.corpus.doc_index) ] if self.corpus is not None else None
 
 		self.termTopicMatrix = []
-		topicsAndFreqsTerms = self.model.show_topics(topics=-1, topn=len(self.dictionary), formatted=False)
+		topicsAndFreqsTerms = self.model.show_topics(num_topics=-1, num_words=len(self.dictionary), formatted=False)
 		for topicIndex, freqsTerms in enumerate(topicsAndFreqsTerms):
 			for value, term in freqsTerms:
 				self.termTopicMatrix.append({
